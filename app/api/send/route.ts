@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const maxDuration = 30;
 
-const DEFAULT_NUMBER = "081380680631";
+const DEFAULT_NUMBER = "085199564516";
 const WA_SERVER_URL = process.env.WA_SERVER_URL!;
 const AUTH_SECRET = process.env.AUTH_SECRET || "gatesend_secret_2024";
 
