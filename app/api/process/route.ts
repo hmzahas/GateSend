@@ -19,14 +19,17 @@ async function pdfToPages(buffer: Buffer): Promise<{ imageBase64: string; spnu: 
   const results: { imageBase64: string; spnu: string }[] = [];
 
   for (let i = 0; i < totalPages; i++) {
+    const t = Date.now();
     const page = doc.loadPage(i);
 
-    // Extract teks langsung dari PDF (tanpa OCR)
     const text = page.toStructuredText("preserve-whitespace").asJSON();
     const spnu = extractSPNU(text);
+    console.log(`Page ${i+1} text extract: ${Date.now()-t}ms`);
 
+    const t2 = Date.now();
     const pixmap = page.toPixmap(mupdf.Matrix.scale(2.0, 2.0), mupdf.ColorSpace.DeviceRGB, false, false);
     const imgBuffer = await sharp(Buffer.from(pixmap.asPNG())).jpeg({ quality: 80 }).toBuffer();
+    console.log(`Page ${i+1} render: ${Date.now()-t2}ms`);
 
     results.push({ imageBase64: imgBuffer.toString("base64"), spnu });
   }
