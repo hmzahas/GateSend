@@ -23,13 +23,13 @@ async function pdfToPages(buffer: Buffer): Promise<{ imageBase64: string; spnu: 
 
   for (let i = 0; i < totalPages; i++) {
     const page = doc.loadPage(i);
-    const pixmap = page.toPixmap(mupdf.Matrix.scale(4.0, 4.0), mupdf.ColorSpace.DeviceRGB, false, false);
-    const imgBuffer = await sharp(Buffer.from(pixmap.asPNG())).jpeg({ quality: 95 }).toBuffer();
+    const pixmap = page.toPixmap(mupdf.Matrix.scale(2.0, 2.0), mupdf.ColorSpace.DeviceRGB, false, false);
+    const imgBuffer = await sharp(Buffer.from(pixmap.asPNG())).jpeg({ quality: 80 }).toBuffer();
 
-    // OCR hanya di 25% atas halaman karena SPNU selalu ada di sana
     const meta = await sharp(imgBuffer).metadata();
     const cropBuffer = await sharp(imgBuffer)
       .extract({ left: 0, top: 0, width: meta.width!, height: Math.floor(meta.height! * 0.25) })
+      .resize({ width: 800 })
       .toBuffer();
 
     const { data: { text } } = await ocrWorker.recognize(cropBuffer);
