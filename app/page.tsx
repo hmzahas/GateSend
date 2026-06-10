@@ -8,13 +8,19 @@ type PageItem = {
   status: "idle" | "sending" | "sent" | "error";
 };
 
+const NUMBERS = [
+  { label: "Ari Del", value: "085264561544" },
+  { label: "Iwan Del", value: "085297620123" },
+  { label: "No. UTAMA", value: "085199564516" },
+];
+
 export default function Home() {
   const [pages, setPages] = useState<PageItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [fileName, setFileName] = useState("");
+  const [selectedNumber, setSelectedNumber] = useState(NUMBERS[0].value);
   const fileRef = useRef<HTMLInputElement>(null);
-  // const TARGET_NUMBER = "085199564516";
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -47,7 +53,7 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          // number: TARGET_NUMBER,
+          number: selectedNumber,
           spnu: page.spnu,
           imageBase64: page.imageBase64,
           pageIndex: page.pageIndex,
@@ -81,11 +87,32 @@ export default function Home() {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800 mb-1">📄 GateSend </h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-1">📄 GateSend</h1>
           <p className="text-gray-500 text-sm">Upload PDF/Word → Convert per halaman → Kirim otomatis ke WhatsApp</p>
           <div className="mt-3 inline-flex items-center gap-2 bg-green-600 text-white text-sm px-4 py-1.5 rounded-full">
             <span>📱</span> Kirim via WhatsApp
           </div>
+        </div>
+
+        {/* Pilih Nomor Tujuan */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-6">
+          <p className="text-sm font-medium text-gray-700 mb-3">📲 Pilih Nomor Tujuan</p>
+          <div className="flex gap-2 flex-wrap">
+            {NUMBERS.map((n) => (
+              <button
+                key={n.value}
+                onClick={() => setSelectedNumber(n.value)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors ${
+                  selectedNumber === n.value
+                    ? "bg-green-600 text-white border-green-600"
+                    : "bg-white text-gray-600 border-gray-200 hover:border-green-400"
+                }`}
+              >
+                {n.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-gray-400 mt-2">Terpilih: {NUMBERS.find(n => n.value === selectedNumber)?.label} ({selectedNumber})</p>
         </div>
 
         {/* Upload Area */}
