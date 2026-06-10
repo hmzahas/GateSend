@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 type PageItem = {
   pageIndex: number;
@@ -14,7 +14,16 @@ export default function Home() {
   const [error, setError] = useState("");
   const [fileName, setFileName] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
-  // const TARGET_NUMBER = "085199564516";
+  const [numbers, setNumbers] = useState<{ label: string; value: string }[]>([]);
+  const [selectedNumber, setSelectedNumber] = useState("");
+
+  useEffect(() => {
+    fetch("/api/settings").then(r => r.json()).then(data => {
+      const valid = data.numbers.filter((n: { value: string }) => n.value);
+      setNumbers(valid);
+      if (valid.length > 0) setSelectedNumber(valid[0].value);
+    });
+  }, []);
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -47,7 +56,7 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          // number: TARGET_NUMBER,
+          number: selectedNumber,
           spnu: page.spnu,
           imageBase64: page.imageBase64,
           pageIndex: page.pageIndex,
@@ -83,8 +92,13 @@ export default function Home() {
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-800 mb-1">📄 GateSend </h1>
           <p className="text-gray-500 text-sm">Upload PDF/Word → Convert per halaman → Kirim otomatis ke WhatsApp</p>
-          <div className="mt-3 inline-flex items-center gap-2 bg-green-600 text-white text-sm px-4 py-1.5 rounded-full">
-            <span>📱</span> Kirim via WhatsApp
+          <div className="mt-3 flex items-center justify-center gap-2">
+            <div className="inline-flex items-center gap-2 bg-green-600 text-white text-sm px-4 py-1.5 rounded-full">
+              <span>📱</span> Kirim via WhatsApp
+            </div>
+            <a href="/settings" className="inline-flex items-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm px-4 py-1.5 rounded-full transition-colors">
+              ⚙️ Pengaturan
+            </a>
           </div>
         </div>
 
@@ -111,6 +125,28 @@ export default function Home() {
         {/* Error */}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 mb-6 text-sm">⚠️ {error}</div>
+        )}
+
+        {/* Pilih Nomor Tujuan */}
+        {numbers.length > 0 && (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-6">
+            <p className="text-sm font-medium text-gray-700 mb-2">📲 Nomor Tujuan</p>
+            <div className="flex gap-2 flex-wrap">
+              {numbers.map((n) => (
+                <button
+                  key={n.value}
+                  onClick={() => setSelectedNumber(n.value)}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors ${
+                    selectedNumber === n.value
+                      ? "bg-green-600 text-white border-green-600"
+                      : "bg-white text-gray-600 border-gray-200 hover:border-green-400"
+                  }`}
+                >
+                  {n.label} ({n.value})
+                </button>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Results */}

@@ -8,18 +8,16 @@ export default function WAConnect() {
   useEffect(() => {
     const check = async () => {
       try {
-        const res = await fetch("http://localhost:3001/status");
+        const res = await fetch("/api/wa-status");
         const data = await res.json();
         if (data.connected) {
           setStatus("connected");
         } else {
           setStatus("disconnected");
-          // load QR as iframe
-          setQrSrc("http://localhost:3001/qr?t=" + Date.now());
+          setQrSrc("/api/wa-qr?t=" + Date.now());
         }
       } catch {
         setStatus("disconnected");
-        setQrSrc("http://localhost:3001/qr?t=" + Date.now());
       }
     };
     check();
@@ -30,11 +28,9 @@ export default function WAConnect() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 max-w-sm w-full text-center">
-        <h1 className="text-xl font-bold text-gray-800 mb-2">📱 Koneksi WhatsApp</h1>
+        <h1 className="text-xl font-bold text-gray-800 mb-2">📱 Koneksi WhatsApp Pengirim</h1>
 
-        {status === "loading" && (
-          <p className="text-gray-500 text-sm">Menghubungkan ke WA server...</p>
-        )}
+        {status === "loading" && <p className="text-gray-500 text-sm">Menghubungkan ke WA server...</p>}
 
         {status === "connected" && (
           <div className="mt-4">
@@ -50,7 +46,7 @@ export default function WAConnect() {
         {status === "disconnected" && (
           <div className="mt-4">
             <p className="text-gray-600 text-sm mb-4">
-              Scan QR ini dengan WhatsApp<br />
+              Scan QR ini dengan WhatsApp pengirim<br />
               <span className="text-gray-400 text-xs">Linked Devices → Link a Device</span>
             </p>
             <iframe
