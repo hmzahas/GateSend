@@ -11,11 +11,19 @@ export default function Settings() {
   ]);
   const [saved, setSaved] = useState(false);
   const [waConnected, setWaConnected] = useState<boolean | null>(null);
+  const [disconnecting, setDisconnecting] = useState(false);
 
   useEffect(() => {
     fetch("/api/settings").then(r => r.json()).then(data => setNumbers(data.numbers));
     fetch("/api/wa-status").then(r => r.json()).then(data => setWaConnected(data.connected));
   }, []);
+
+  async function disconnect() {
+    setDisconnecting(true);
+    await fetch("/api/wa-logout", { method: "POST" });
+    setWaConnected(false);
+    setDisconnecting(false);
+  }
 
   async function save() {
     await fetch("/api/settings", {
@@ -42,12 +50,23 @@ export default function Settings() {
             <span className={`text-sm font-medium ${waConnected ? "text-green-600" : "text-red-500"}`}>
               {waConnected === null ? "Memeriksa..." : waConnected ? "✅ Terkoneksi" : "❌ Tidak Terkoneksi"}
             </span>
-            <a
-              href="/wa-connect"
-              className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-xl transition-colors"
-            >
-              {waConnected ? "Ganti Pengirim" : "Hubungkan"}
-            </a>
+            <div className="flex gap-2">
+              {waConnected && (
+                <button
+                  onClick={disconnect}
+                  disabled={disconnecting}
+                  className="bg-red-500 hover:bg-red-600 disabled:bg-gray-300 text-white text-sm px-4 py-2 rounded-xl transition-colors"
+                >
+                  {disconnecting ? "Memutus..." : "Putuskan"}
+                </button>
+              )}
+              <a
+                href="/wa-connect"
+                className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-xl transition-colors"
+              >
+                {waConnected ? "Ganti Pengirim" : "Hubungkan"}
+              </a>
+            </div>
           </div>
         </div>
 
