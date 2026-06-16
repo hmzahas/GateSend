@@ -87,16 +87,16 @@ export default function Home() {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800 mb-1">📄 GateSend</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-1">GateSend</h1>
           <p className="text-gray-500 text-sm">Upload PDF/Word → Convert per halaman → Kirim otomatis ke WhatsApp</p>
           <div className="mt-3 inline-flex items-center gap-2 bg-green-600 text-white text-sm px-4 py-1.5 rounded-full">
-            <span>📱</span> Kirim via WhatsApp
+            Kirim via WhatsApp
           </div>
         </div>
 
         {/* Pilih Nomor Tujuan */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-6">
-          <p className="text-sm font-medium text-gray-700 mb-3">📲 Pilih Nomor Tujuan</p>
+          <p className="text-sm font-medium text-gray-700 mb-3">Pilih Nomor Tujuan</p>
           <div className="flex gap-2 flex-wrap">
             {NUMBERS.map((n) => (
               <button
@@ -124,7 +124,7 @@ export default function Home() {
           <div className="text-5xl mb-3">📂</div>
           <p className="font-semibold text-gray-700">Klik untuk pilih file</p>
           <p className="text-gray-400 text-sm mt-1">Format: PDF, DOC, DOCX</p>
-          {fileName && <p className="mt-2 text-green-600 text-sm font-medium">📎 {fileName}</p>}
+          {fileName && <p className="mt-2 text-green-600 text-sm font-medium">{fileName}</p>}
         </div>
 
         {/* Loading */}
@@ -137,7 +137,7 @@ export default function Home() {
 
         {/* Error */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 mb-6 text-sm">⚠️ {error}</div>
+          <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 mb-6 text-sm">{error}</div>
         )}
 
         {/* Results */}
@@ -153,7 +153,7 @@ export default function Home() {
                 disabled={sentCount === pages.length}
                 className="bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium px-5 py-2 rounded-xl text-sm transition-colors flex items-center gap-2"
               >
-                📤 Kirim Semua ke WA
+                Kirim Semua ke WA
               </button>
             </div>
 
