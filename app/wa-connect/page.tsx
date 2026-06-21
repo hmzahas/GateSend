@@ -3,28 +3,33 @@ import { useEffect, useState } from "react";
 
 export default function WAConnect() {
   const [status, setStatus] = useState<"loading" | "connected" | "disconnected">("loading");
-  const [qrSrc, setQrSrc] = useState("");
+  const [qrImg, setQrImg] = useState("");
+  const [qrTs, setQrTs] = useState<number | null>(null);
 
   useEffect(() => {
-    const check = async () => {
+    let timer: ReturnType<typeof setTimeout>;
+
+    const poll = async () => {
       try {
-        const res = await fetch("http://localhost:3001/status");
+        const res = await fetch("http://localhost:3001/qr-data");
         const data = await res.json();
         if (data.connected) {
           setStatus("connected");
-        } else {
-          setStatus("disconnected");
-          // load QR as iframe
-          setQrSrc("http://localhost:3001/qr?t=" + Date.now());
+          return;
+        }
+        setStatus("disconnected");
+        if (data.qr && data.ts !== qrTs) {
+          setQrImg(data.qr);
+          setQrTs(data.ts);
         }
       } catch {
         setStatus("disconnected");
-        setQrSrc("http://localhost:3001/qr?t=" + Date.now());
       }
+      timer = setTimeout(poll, 4000);
     };
-    check();
-    const interval = setInterval(check, 5000);
-    return () => clearInterval(interval);
+
+    poll();
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -49,16 +54,22 @@ export default function WAConnect() {
 
         {status === "disconnected" && (
           <div className="mt-4">
-            <p className="text-gray-600 text-sm mb-4">
-              Scan QR ini dengan WhatsApp<br />
-              <span className="text-gray-400 text-xs">Linked Devices → Link a Device</span>
-            </p>
-            <iframe
-              src={qrSrc}
-              className="w-full rounded-xl border border-gray-100"
-              style={{ height: 420 }}
-              title="QR WhatsApp"
-            />
+            {qrImg ? (
+              <>
+                <p className="text-gray-600 text-sm mb-3">
+                  Scan QR ini dengan WhatsApp<br />
+                  <span className="text-gray-400 text-xs">Linked Devices → Link a Device</span>
+                </p>
+                <img src={qrImg} alt="QR WhatsApp" className="w-64 h-64 mx-auto rounded-xl border border-gray-100" />
+                <p className="text-gray-400 text-xs mt-2">QR akan diperbarui otomatis jika expired</p>
+              </>
+            ) : (
+              <div className="py-8">
+                <div className="w-10 h-10 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                <p className="text-gray-500 text-sm">Memuat QR Code...</p>
+                <p className="text-gray-400 text-xs mt-1">Mohon tunggu ~30 detik</p>
+              </div>
+            )}
           </div>
         )}
       </div>
