@@ -14,18 +14,17 @@ export async function POST(req: NextRequest) {
     const target = number || DEFAULT_NUMBER;
     const message = spnu ? `${spnu}` : `Halaman ${pageIndex + 1}`;
 
-    console.log("AUTH_SECRET sent:", AUTH_SECRET);
     const res = await fetch(`${WA_SERVER_URL}/send`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "x-auth-secret": AUTH_SECRET,
+        "ngrok-skip-browser-warning": "true",
       },
       body: JSON.stringify({ number: target, message, imageBase64 }),
     });
 
     const data = await res.json();
-    console.log("WA Server response:", res.status, JSON.stringify(data));
     if (!res.ok) return NextResponse.json({ error: data.error || "Gagal kirim" }, { status: 500 });
 
     return NextResponse.json({ success: true, data });
