@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 const DEFAULT_NUMBER = "085199564516";
 const WA_SERVER_URL = process.env.WA_SERVER_URL!;
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     });
 
     const data = await res.json();
-    if (!res.ok) return NextResponse.json({ error: data.error || "Gagal kirim" }, { status: 500 });
+    if (!res.ok) return NextResponse.json({ error: data.error || "Gagal kirim" }, { status: res.status });
 
     return NextResponse.json({ success: true, data });
   } catch (err: unknown) {
